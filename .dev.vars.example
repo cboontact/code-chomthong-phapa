@@ -1,0 +1,9 @@
+# Copy this file to .dev.vars for local development, then replace every placeholder.
+# Never commit .dev.vars or real passwords.
+NEXTJS_ENV=development
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=replace_with_a_strong_password
+ADMIN_DISPLAY_NAME="ชื่อผู้ดูแลคนที่ 1"
+ADMIN2_USERNAME=your_second_admin_username
+ADMIN2_PASSWORD=replace_with_another_strong_password
+ADMIN2_DISPLAY_NAME="ชื่อผู้ดูแลคนที่ 2"
