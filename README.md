@@ -2,7 +2,6 @@
 
 เอกสารฉบับนี้จัดทำขึ้นเพื่อเป็นคู่มือใช้งาน ดูแลระบบ และอ้างอิงทางเทคนิคของระบบนับยอดผ้าป่าโรงเรียนจอมทอง โดยอธิบายลำดับการทำงาน การรักษาความปลอดภัย การพิมพ์รายงาน และการติดตั้งบน Cloudflare Workers อย่างเป็นระบบ
 
-- เว็บไซต์ใช้งานจริง: [https://chomthong-phapa.doitgict.workers.dev](https://chomthong-phapa.doitgict.workers.dev)
 - Runtime: Cloudflare Workers
 - ฐานข้อมูล: Cloudflare D1
 - Frontend: Next.js + TypeScript + Tailwind CSS
@@ -412,7 +411,6 @@ npm run preview
 - Worker: `chomthong-phapa`
 - D1 binding: `DB`
 - D1 database ปัจจุบัน: `pha-pha-counter-db`
-- URL: `https://chomthong-phapa.doitgict.workers.dev`
 
 ### 🚀 13.2 ลำดับ Deploy
 
