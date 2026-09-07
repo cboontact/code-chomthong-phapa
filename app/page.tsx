@@ -27,7 +27,7 @@ export default function Home() {
   const [amountChange, setAmountChange] = useState<number | null>(null);
   const previousTotal = useRef<number | null>(null);
   const notify = useCallback((text: string, type: "success" | "error" = "success") => { setToast({ text, type }); window.setTimeout(() => setToast(null), 3200); }, []);
-  const load = useCallback(async () => { try { const r = await fetch("/api/donations", { cache: "no-store" }); if (!r.ok) throw new Error(); const payload = await r.json() as DashboardData; if (previousTotal.current !== null && payload.totalAmount !== previousTotal.current) { const difference = payload.totalAmount - previousTotal.current; setAmountChange(difference); window.setTimeout(() => setAmountChange(null), 2100); if (difference > 0) { setCelebration(true); window.setTimeout(() => setCelebration(false), 6000); } } previousTotal.current = payload.totalAmount; setData(payload); setRevision(payload.revision); } catch { notify("ไม่สามารถโหลดข้อมูลได้", "error"); } }, [notify]);
+  const load = useCallback(async () => { try { const r = await fetch("/api/donations", { cache: "no-store" }); if (!r.ok) throw new Error(); const payload = await r.json() as DashboardData; if (previousTotal.current !== null && payload.totalAmount !== previousTotal.current) { const difference = payload.totalAmount - previousTotal.current; setAmountChange(difference); window.setTimeout(() => setAmountChange(null), 3200); if (difference > 0) { setCelebration(true); window.setTimeout(() => setCelebration(false), 8000); } } previousTotal.current = payload.totalAmount; setData(payload); setRevision(payload.revision); } catch { notify("ไม่สามารถโหลดข้อมูลได้", "error"); } }, [notify]);
   const checkForChanges = useCallback(async () => { try { const r = await fetch("/api/donations/changes", { cache: "no-store" }); if (!r.ok) return; const payload = await r.json() as { revision: string }; if (revision && payload.revision !== revision) await load(); } catch { /* Background checks fail silently. */ } }, [load, revision]);
   const getSession = useCallback(async () => { try { setIsAdmin(Boolean((await (await fetch("/api/auth/session")).json()).authenticated)); } catch { setIsAdmin(false); } }, []);
   useEffect(() => { const id = window.setTimeout(() => { void load(); void getSession(); }, 0); return () => clearTimeout(id); }, [load, getSession]);
@@ -74,7 +74,7 @@ function AnimatedMoney({ value }: { value: number }) {
     const startedAt = performance.now();
     let frame = 0;
     const tick = (now: number) => {
-      const progress = Math.min((now - startedAt) / 2000, 1);
+      const progress = Math.min((now - startedAt) / 3200, 1);
       const eased = 1 - Math.pow(1 - progress, 4);
       setDisplay(startValue + difference * eased);
       if (progress < 1) frame = requestAnimationFrame(tick);
