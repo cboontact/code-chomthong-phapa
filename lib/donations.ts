@@ -3,12 +3,12 @@ import type { DashboardData, Donation, DonationInput } from "./types";
 import type { AdminIdentity } from "./auth";
 
 type DonationRow = {
-  id: string; batch_number: string; batch_name: string; amount: number; note: string;
+  id: string; batch_number: string; batch_name: string; cash_amount: number; transfer_amount: number; amount: number; note: string;
   received_at: string; created_at: string; updated_at: string;
 };
 
 const toDonation = (row: DonationRow): Donation => ({
-  id: row.id, batchNumber: row.batch_number, batchName: row.batch_name, amount: Number(row.amount),
+  id: row.id, batchNumber: row.batch_number, batchName: row.batch_name, cashAmount: Number(row.cash_amount), transferAmount: Number(row.transfer_amount), amount: Number(row.amount),
   note: row.note, receivedAt: row.received_at, createdAt: row.created_at, updatedAt: row.updated_at,
 });
 
@@ -20,9 +20,9 @@ export async function listDashboard(): Promise<DashboardData> {
   const database = db();
   const [rows, totals] = await Promise.all([
     database.prepare("SELECT * FROM donations WHERE campaign_id = ? ORDER BY datetime(received_at) DESC, rowid DESC").bind("main").all<DonationRow>(),
-    database.prepare("SELECT COALESCE(SUM(amount), 0) AS totalAmount, COUNT(*) AS totalRecords, COUNT(DISTINCT batch_number) AS totalBatches, COALESCE(MAX(updated_at), '') AS lastUpdated FROM donations WHERE campaign_id = ?").bind("main").first<{ totalAmount: number; totalRecords: number; totalBatches: number; lastUpdated: string }>(),
+    database.prepare("SELECT COALESCE(SUM(amount), 0) AS totalAmount, COALESCE(SUM(cash_amount), 0) AS totalCashAmount, COALESCE(SUM(transfer_amount), 0) AS totalTransferAmount, COUNT(*) AS totalRecords, COUNT(DISTINCT batch_number) AS totalBatches, COALESCE(MAX(updated_at), '') AS lastUpdated FROM donations WHERE campaign_id = ?").bind("main").first<{ totalAmount: number; totalCashAmount: number; totalTransferAmount: number; totalRecords: number; totalBatches: number; lastUpdated: string }>(),
   ]);
-  return { donations: (rows.results ?? []).map(toDonation), totalAmount: Number(totals?.totalAmount ?? 0), totalRecords: Number(totals?.totalRecords ?? 0), totalBatches: Number(totals?.totalBatches ?? 0), revision: `${totals?.totalRecords ?? 0}:${totals?.lastUpdated ?? ""}` };
+  return { donations: (rows.results ?? []).map(toDonation), totalAmount: Number(totals?.totalAmount ?? 0), totalCashAmount: Number(totals?.totalCashAmount ?? 0), totalTransferAmount: Number(totals?.totalTransferAmount ?? 0), totalRecords: Number(totals?.totalRecords ?? 0), totalBatches: Number(totals?.totalBatches ?? 0), revision: `${totals?.totalRecords ?? 0}:${totals?.lastUpdated ?? ""}` };
 }
 
 export async function getDashboardRevision() {
@@ -39,7 +39,7 @@ export async function createDonation(input: DonationInput, actor: AdminIdentity)
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   await database.batch([
-    database.prepare("INSERT INTO donations (id, campaign_id, batch_number, batch_name, amount, note, received_at, created_at, updated_at) VALUES (?, 'main', ?, ?, ?, ?, ?, ?, ?)").bind(id, input.batchNumber, input.batchName, input.amount, input.note, now, now, now),
+    database.prepare("INSERT INTO donations (id, campaign_id, batch_number, batch_name, cash_amount, transfer_amount, amount, note, received_at, created_at, updated_at) VALUES (?, 'main', ?, ?, ?, ?, ?, ?, ?, ?, ?)").bind(id, input.batchNumber, input.batchName, input.cashAmount, input.transferAmount, input.cashAmount + input.transferAmount, input.note, now, now, now),
     auditStatement(database, id, "create", { after: input }, actor),
   ]);
   return id;
@@ -51,7 +51,7 @@ export async function updateDonation(id: string, input: DonationInput, actor: Ad
   if (!before) return false;
   const now = new Date().toISOString();
   await database.batch([
-    database.prepare("UPDATE donations SET batch_number = ?, batch_name = ?, amount = ?, note = ?, updated_at = ? WHERE id = ? AND campaign_id = 'main'").bind(input.batchNumber, input.batchName, input.amount, input.note, now, id),
+    database.prepare("UPDATE donations SET batch_number = ?, batch_name = ?, cash_amount = ?, transfer_amount = ?, amount = ?, note = ?, updated_at = ? WHERE id = ? AND campaign_id = 'main'").bind(input.batchNumber, input.batchName, input.cashAmount, input.transferAmount, input.cashAmount + input.transferAmount, input.note, now, id),
     auditStatement(database, id, "update", { before: toDonation(before), after: input }, actor),
   ]);
   return true;

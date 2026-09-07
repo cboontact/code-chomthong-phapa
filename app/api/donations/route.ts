@@ -9,10 +9,12 @@ function validate(payload: unknown): { data?: DonationInput; error?: string } {
   const value = payload as Partial<DonationInput>;
   const batchNumber = value.batchNumber?.trim();
   const batchName = value.batchName?.trim();
-  const amount = Number(value.amount);
+  const cashAmount = Number(value.cashAmount ?? 0);
+  const transferAmount = Number(value.transferAmount ?? 0);
   if (!batchNumber || !batchName) return { error: "กรุณากรอกรุ่นที่และชื่อรุ่นให้ครบ" };
-  if (!Number.isFinite(amount) || amount <= 0) return { error: "จำนวนเงินต้องมากกว่า 0 บาท" };
-  return { data: { batchNumber, batchName, amount, note: value.note?.trim() ?? "" } };
+  if (!Number.isFinite(cashAmount) || cashAmount < 0 || !Number.isFinite(transferAmount) || transferAmount < 0) return { error: "จำนวนเงินสดและเงินโอนต้องเป็นจำนวนตั้งแต่ 0 บาท" };
+  if (cashAmount + transferAmount <= 0) return { error: "กรุณาระบุเงินสดหรือเงินโอนอย่างน้อย 1 บาท" };
+  return { data: { batchNumber, batchName, cashAmount, transferAmount, note: value.note?.trim() ?? "" } };
 }
 
 export async function GET() { return NextResponse.json(await listDashboard()); }
