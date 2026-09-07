@@ -74,21 +74,9 @@ header + section > div[class*="bg-gradient-to-br from-amber-400 via-orange-500 t
   opacity: .55;
   animation: drift-dots 22s linear infinite;
 }
-header + section > div[class*="bg-gradient-to-br from-amber-400 via-orange-500 to-orange-600"]::after {
-  content: "● LIVE";
-  position: absolute;
-  top: 1.2rem;
-  right: 1.35rem;
-  border: 1px solid rgba(255,255,255,.38);
-  border-radius: 999px;
-  padding: .3rem .65rem;
-  background: rgba(255,255,255,.13);
-  color: rgba(255,255,255,.96);
-  font-size: .7rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  animation: live-pulse 2.2s ease-in-out infinite;
-}
+.live-now { position: absolute; top: 1.2rem; right: 1.35rem; z-index: 2; display: inline-flex; align-items: center; gap: .42rem; border: 1px solid rgba(255,255,255,.38); border-radius: 999px; padding: .32rem .7rem; background: rgba(255,255,255,.13); color: rgba(255,255,255,.96); font-size: .7rem; font-weight: 800; letter-spacing: .04em; backdrop-filter: blur(5px); }
+.live-now span { width: .46rem; height: .46rem; border-radius: 999px; background: #fff; box-shadow: 0 0 0 0 rgba(255,255,255,.65); animation: live-dot 1.7s ease-in-out infinite; }
+.live-now strong { font-size: .68rem; }.live-now time { border-left: 1px solid rgba(255,255,255,.35); padding-left: .42rem; font-variant-numeric: tabular-nums; }
 header + section > div[class*="bg-gradient-to-br from-amber-400 via-orange-500 to-orange-600"] h1 {
   animation: total-breathe 3.6s ease-in-out infinite;
 }
@@ -125,6 +113,7 @@ tbody tr:hover { transform: translateX(3px); transition: transform .2s ease; }
 @keyframes hero-gradient { 0%, 100% { background-position: 0% 45%; } 50% { background-position: 100% 55%; } }
 @keyframes drift-dots { to { transform: translate3d(34px, 34px, 0) rotate(2deg); } }
 @keyframes live-pulse { 50% { box-shadow: 0 0 0 7px rgba(255,255,255,0); opacity: .7; } }
+@keyframes live-dot { 50% { box-shadow: 0 0 0 6px rgba(255,255,255,0); opacity: .65; } }
 @keyframes total-breathe { 50% { transform: scale(1.018); text-shadow: 0 7px 20px rgba(112, 45, 0, .18); } }
 @keyframes hero-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes card-enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
