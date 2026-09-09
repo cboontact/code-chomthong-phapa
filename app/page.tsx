@@ -83,7 +83,9 @@ function AnimatedMoney({ value }: { value: number }) {
     previous.current = value;
     return () => cancelAnimationFrame(frame);
   }, [value]);
-  return <span key={value} className="animated-money">{money.format(display)}</span>;
+  const formatted = money.format(display);
+  const size = formatted.length >= 21 ? " animated-money-xl" : formatted.length >= 17 ? " animated-money-long" : formatted.length >= 14 ? " animated-money-medium" : "";
+  return <span key={value} className={"animated-money" + size}>{formatted}</span>;
 }
 
 function LiveNow() {
